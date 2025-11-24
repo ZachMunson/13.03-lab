@@ -3,21 +3,39 @@ extends layout
 block content
   h1= title
   p Welcome to #{title}
+
+  // Display an error if blank task is submitted
+  if error
+    p.error #{error}
+
   ol
-  each val in todos
-    li
-      span= val.task + ' - '
-      if val.completed > 0
-        span Completed
-      else
-        pan Not Completed
-      form(method='POST' action='/delete')
-        input(type='hidden', name='id', value=val.id)
-        button(type='submit') Delete
+    each val in todos
+      li
+        span= val.task + ' - '
+        if val.completed > 0
+          span(style="color:green;") Completed
+        else
+          span(style="color:red;") Not Completed
+
+        // Toggle Completion Button
+        form(method='POST', action='/complete', style='display:inline; margin-left: 10px;')
+          input(type='hidden', name='id', value=val.id)
+          input(type='hidden', name='completed', value=val.completed)
+          button(type='submit') #{val.completed > 0 ? 'Undo' : 'Complete'}
+
+        // Edit Button
+        a(href=`/edit/${val.id}`, style='margin-left:10px;')
+          button(type='button') Edit
+
+        // Delete Button
+        form(method='POST', action='/delete', style='display:inline; margin-left:10px;')
+          input(type='hidden', name='id', value=val.id)
+          button(type='submit') Delete
 
   hr
   h2 Add a new task
-  form(method='POST' action='/create')
+  form(method='POST', action='/create')
     label(for='task') Task:
-    input(type='text', name='task', id='task', required)
+    input(type='text', name='task', id='task')
     button(type='submit') Create Task
+
